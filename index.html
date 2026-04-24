@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Daily Prebooking – Turnitin Services</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(145deg, #d9e6f0 0%, #b8cfdf 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .booking-card {
+      width: 100%;
+      max-width: 600px;
+      background: white;
+      border-radius: 48px;
+      box-shadow: 0 25px 45px -12px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1a4a6f 0%, #0e3a57 100%);
+      padding: 28px 20px;
+      text-align: center;
+      color: white;
+    }
+    .hero h1 { font-size: 1.8rem; margin-bottom: 4px; }
+    .hero p { font-size: 0.9rem; opacity: 0.9; }
+    .seats-panel {
+      background: #fef7e0;
+      text-align: center;
+      padding: 14px;
+      font-weight: 600;
+      border-bottom: 1px solid #f0e1b0;
+    }
+    .seats-panel span { font-size: 1.8rem; font-weight: 800; color: #c97e00; margin: 0 4px; }
+    .form-body { padding: 28px 24px; }
+    .input-group { margin-bottom: 22px; }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #1a4a6f;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 18px;
+      border: 1.5px solid #e2edf2;
+      border-radius: 44px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: white;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #1a4a6f;
+      box-shadow: 0 0 0 3px rgba(26,74,111,0.1);
+    }
+    .phone-row { display: flex; flex-direction: column; gap: 12px; }
+    .country-code, .phone-number { width: 100%; }
+    .flex-row { display: flex; flex-direction: column; gap: 14px; }
+    button {
+      background: #1a4a6f;
+      color: white;
+      border: none;
+      border-radius: 44px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    button:hover:not(:disabled) {
+      background: #0f3b4f;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    button:disabled { background: #9bb7c9; cursor: not-allowed; transform: none; }
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .radio-group label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: normal;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+    .message { margin-top: 20px; padding: 12px; border-radius: 40px; text-align: center; font-size: 0.85rem; }
+    .success { background: #e0f2e9; color: #1e6f5c; }
+    .error { background: #ffe6e5; color: #b33; }
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.8);
+      border-top-color: #1a4a6f;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer-note {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #5f7f9a;
+      border-top: 1px solid #e2edf2;
+      padding: 18px 16px;
+      background: white;
+    }
+    .service-description {
+      background: #f0f6fa;
+      border-radius: 20px;
+      padding: 12px 16px;
+      margin: -12px 0 16px 0;
+      font-size: 0.85rem;
+      color: #2c5a7a;
+      border-left: 4px solid #f5b042;
+    }
+    .payment-details {
+      background: #f0f6fa;
+      border-radius: 28px;
+      padding: 16px;
+      margin: 20px 0;
+      border: 1px solid #cbdde6;
+    }
+    .payment-details h4 {
+      color: #1a4a6f;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .amount-box {
+      background: white;
+      border-radius: 40px;
+      padding: 8px 12px;
+      margin: 12px 0;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #1a4a6f;
+      border: 1px solid #cbdde6;
+    }
+    .amount-box .original-price {
+      text-decoration: line-through;
+      color: #b33;
+      font-size: 0.9rem;
+      margin-right: 8px;
+    }
+    .bank-row {
+      margin: 8px 0;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #cbdde6;
+      padding: 6px 0;
+    }
+    .bank-label { font-weight: 600; }
+    .file-dropzone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 32px;
+      padding: 20px 16px;
+      text-align: center;
+      background: #f8fafc;
+      transition: all 0.2s;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+    .file-dropzone.drag-over {
+      background: #eef3f8;
+      border-color: #1a4a6f;
+    }
+    .file-info {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: #1e6f5c;
+      word-break: break-all;
+    }
+    .remove-file {
+      background: none;
+      border: none;
+      color: #b33;
+      cursor: pointer;
+      font-size: 0.7rem;
+      text-decoration: underline;
+      display: inline-block;
+      width: auto;
+      padding: 0 4px;
+      margin-left: 8px;
+    }
+    .file-progress-container {
+      margin: 8px 0 4px;
+      display: none;
+    }
+    .file-progress-bar {
+      width: 100%;
+      background-color: #e2edf2;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 4px;
+    }
+    .file-progress-fill {
+      width: 0%;
+      height: 100%;
+      background: #2c8c6e;
+      border-radius: 20px;
+      transition: width 0.3s ease;
+    }
+    .progress-container { margin: 16px 0; display: none; }
+    .progress-bar { width: 100%; background-color: #e2edf2; border-radius: 40px; overflow: hidden; height: 8px; }
+    .progress-fill { width: 0%; height: 100%; background: #2c8c6e; border-radius: 40px; transition: width 0.3s ease; }
+    .progress-text { font-size: 0.7rem; color: #5f7f9a; margin-top: 6px; text-align: center; }
+    @media (max-width: 480px) {
+      .form-body { padding: 22px 18px; }
+      .hero h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="booking-card">
+  <div class="hero">
+    <h1>📅 DAILY PREBOOKING</h1>
+    <p>Only <strong>7 seats</strong> available per day – first come, first served</p>
+  </div>
+  <div class="seats-panel" id="seatsDisplay">Loading seats...</div>
+  <div class="form-body">
+    <div class="input-group">
+      <label>Full Name *</label>
+      <input type="text" id="fullName" placeholder="e.g., Ahmad Faiz">
+    </div>
+    <div class="input-group">
+      <label>Email Address *</label>
+      <input type="email" id="email" placeholder="you@example.com">
+    </div>
+    <div class="input-group">
+      <label>WhatsApp Number *</label>
+      <div class="phone-row">
+        <div class="country-code">
+          <select id="countryCode">
+            <option value="60">🇲🇾 Malaysia (+60)</option>
+            <option value="65">🇸🇬 Singapore (+65)</option>
+            <option value="62">🇮🇩 Indonesia (+62)</option>
+            <option value="66">🇹🇭 Thailand (+66)</option>
+            <option value="63">🇵🇭 Philippines (+63)</option>
+            <option value="1">🇺🇸 USA (+1)</option>
+            <option value="44">🇬🇧 UK (+44)</option>
+            <option value="61">🇦🇺 Australia (+61)</option>
+            <option value="91">🇮🇳 India (+91)</option>
+            <option value="86">🇨🇳 China (+86)</option>
+          </select>
+        </div>
+        <div class="phone-number">
+          <input type="tel" id="phoneNumber" placeholder="123456789">
+        </div>
+      </div>
+    </div>
+    <div class="input-group">
+      <label>Select Service *</label>
+      <select id="service">
+        <option value="">-- Select a service --</option>
+        <option value="Plagiarism Only" data-price="17.65">📄 Plagiarism Check Only – 17.65 MYR</option>
+        <option value="AI Only" data-price="17.65">🤖 AI Report Only – 17.65 MYR</option>
+        <option value="Bundle" data-price="32.94">🎯 Both AI + Plagiarism Bundle – 32.94 MYR</option>
+        <option value="Manual" data-price="82.35">✍️ Manual Rewriting Service – 82.35 MYR</option>
+      </select>
+    </div>
+
+    <!-- Service description (dynamic) -->
+    <div id="serviceDescription" class="service-description" style="display: none;"></div>
+
+    <!-- PAYMENT TIMING -->
+    <div class="input-group">
+      <label>When would you like to pay? *</label>
+      <div class="radio-group">
+        <label><input type="radio" name="paymentTiming" value="Pay Now"> Pay Now</label>
+        <label><input type="radio" name="paymentTiming" value="Pay Later"> Pay Later (when file is ready)</label>
+      </div>
+    </div>
+
+    <!-- DOCUMENT UPLOAD (hidden by default) -->
+    <div id="docUploadSection" style="display: none;">
+      <div class="input-group">
+        <label>📄 Upload your document (optional, PDF/DOC/DOCX)</label>
+        <div id="docDropzone" class="file-dropzone">
+          <div>📁 Drag & drop or click to browse</div>
+          <div style="font-size:0.7rem; margin-top:8px;">Max 10MB</div>
+        </div>
+        <div id="docProgressContainer" class="file-progress-container">
+          <div class="file-progress-bar"><div id="docProgressFill" class="file-progress-fill"></div></div>
+          <div id="docProgressText" class="file-progress-text"></div>
+        </div>
+        <div id="docFileInfo" class="file-info"></div>
+      </div>
+    </div>
+
+    <!-- PAY NOW SECTION (bank details + promo + proof) – hidden by default -->
+    <div id="payNowSection" style="display: none;">
+      <div class="payment-details">
+        <h4>💳 Bank Transfer Details</h4>
+        <div class="bank-row"><span class="bank-label">Bank:</span> <span>Maybank</span></div>
+        <div class="bank-row"><span class="bank-label">Account Name:</span> <span>Gulal Ahmad</span></div>
+        <div class="bank-row"><span class="bank-label">Account Number:</span> <span>1234 5678 9012</span></div>
+        <div class="bank-row"><span class="bank-label">Reference:</span> <span>Your Name + Booking ID (we will send it after reservation)</span></div>
+        <div class="amount-box" id="totalAmountBox">Amount to pay: -- MYR</div>
+        
+        <!-- Promo code inside bank details -->
+        <div style="margin: 16px 0 8px;">
+          <label style="font-weight:600;">Promo Code (15% discount)</label>
+          <div class="flex-row" style="gap:8px;">
+            <input type="text" id="promoCode" placeholder="Enter code" style="flex:2;">
+            <button id="applyPromoBtn" style="flex:1; background:#f5b042; color:#1a2c3e;">Apply</button>
+          </div>
+          <div id="promoMessage" style="font-size:0.75rem; margin-top:6px;"></div>
+        </div>
+        
+        <div style="font-size:0.7rem; text-align:center; margin-top:12px;">After payment, upload a screenshot below.</div>
+      </div>
+
+      <!-- PAYMENT PROOF UPLOAD -->
+      <div class="input-group">
+        <label>📷 Upload payment proof (screenshot) *</label>
+        <div id="proofDropzone" class="file-dropzone">
+          <div>📸 Drag & drop screenshot or click to browse</div>
+          <div style="font-size:0.7rem; margin-top:8px;">JPG, PNG, PDF (max 10MB)</div>
+        </div>
+        <div id="proofProgressContainer" class="file-progress-container">
+          <div class="file-progress-bar"><div id="proofProgressFill" class="file-progress-fill"></div></div>
+          <div id="proofProgressText" class="file-progress-text"></div>
+        </div>
+        <div id="proofFileInfo" class="file-info"></div>
+      </div>
+    </div>
+
+    <!-- SPECIAL REQUESTS (optional) -->
+    <div class="input-group">
+      <label>Special requests (optional)</label>
+      <textarea rows="2" id="notes" placeholder="e.g., urgent, specific time..."></textarea>
+    </div>
+
+    <!-- RESERVE BUTTON -->
+    <button id="bookBtn">🎟️ RESERVE MY SEAT</button>
+    <div id="msg" class="message"></div>
+  </div>
+  <div class="footer-note">
+    ✅ One seat per person per day. 15% discount with valid promo code. Pay later option available.
+  </div>
+</div>
+
+<script>
+  (function() {
+    const serviceSelect = document.getElementById('service');
+    const serviceDescDiv = document.getElementById('serviceDescription');
+    const paymentTimingRadios = document.querySelectorAll('input[name="paymentTiming"]');
+    const docUploadSection = document.getElementById('docUploadSection');
+    const payNowSection = document.getElementById('payNowSection');
+    const totalAmountBox = document.getElementById('totalAmountBox');
+    const promoInput = document.getElementById('promoCode');
+    const applyPromoBtn = document.getElementById('applyPromoBtn');
+    const promoMessageDiv = document.getElementById('promoMessage');
+    const bookBtn = document.getElementById('bookBtn');
+    const seatsDiv = document.getElementById('seatsDisplay');
+    const msgDiv = document.getElementById('msg');
+    const notesTextarea = document.getElementById('notes');
+
+    // Service descriptions
+    const descriptions = {
+      'Plagiarism Only': '📄 Full Turnitin similarity report with highlighted matches, source links, and percentage score. No AI detection.',
+      'AI Only': '🤖 AI writing indicator report showing probability of AI-generated content (GPT, Bard, etc.). No plagiarism check.',
+      'Bundle': '🎯 Complete package: similarity report + AI detection indicator + source links + detailed breakdown. Best value.',
+      'Manual': '✍️ 100% manual rewriting of AI‑flagged lines to reduce Turnitin similarity and AI detection scores. No tools, just human experts.'
+    };
+
+    function updateServiceDescription() {
+      const selected = serviceSelect.value;
+      if (selected && descriptions[selected]) {
+        serviceDescDiv.innerHTML = descriptions[selected];
+        serviceDescDiv.style.display = 'block';
+      } else {
+        serviceDescDiv.style.display = 'none';
+      }
+    }
+
+    // File variables
+    let docBase64 = null, docName = null;
+    let proofBase64 = null, proofName = null;
+    let currentOriginalPrice = 0;
+    let currentAppliedPromo = null;
+    let isInvalidPromo = false;
+
+    function isServiceSelected() {
+      return serviceSelect.value !== '';
+    }
+
+    function updateUISections() {
+      const serviceOk = isServiceSelected();
+      const selectedTiming = document.querySelector('input[name="paymentTiming"]:checked');
+      
+      // Hide both sections initially
+      docUploadSection.style.display = 'none';
+      payNowSection.style.display = 'none';
+      
+      if (!serviceOk) {
+        if (selectedTiming) {
+          selectedTiming.checked = false;
+          showMessage('⚠️ Please select a service first before choosing payment timing.', 'error');
+        }
+        return;
+      }
+      
+      if (selectedTiming) {
+        docUploadSection.style.display = 'block';
+        if (selectedTiming.value === 'Pay Now') {
+          payNowSection.style.display = 'block';
+          updatePaymentDetails();
+        }
+      }
+    }
+
+    function updatePaymentDetails() {
+      const selected = serviceSelect.options[serviceSelect.selectedIndex];
+      if (!selected.value) return;
+      currentOriginalPrice = parseFloat(selected.getAttribute('data-price'));
+      let finalPrice = currentOriginalPrice;
+      let showOriginal = false;
+      if (currentAppliedPromo && !isInvalidPromo && currentAppliedPromo.newPrice) {
+        finalPrice = currentAppliedPromo.newPrice;
+        showOriginal = true;
+      }
+      if (totalAmountBox) {
+        if (showOriginal) {
+          totalAmountBox.innerHTML = `<span class="original-price">${currentOriginalPrice.toFixed(2)} MYR</span> → ${finalPrice.toFixed(2)} MYR`;
+        } else {
+          totalAmountBox.innerHTML = `Amount to pay: ${finalPrice.toFixed(2)} MYR`;
+        }
+      }
+    }
+
+    function resetPromoState() {
+      currentAppliedPromo = null;
+      isInvalidPromo = false;
+      promoMessageDiv.innerHTML = '';
+      promoInput.value = '';
+      updatePaymentDetails();
+    }
+
+    applyPromoBtn.onclick = function() {
+      const code = promoInput.value.trim();
+      const service = serviceSelect.value;
+      if (!service) {
+        showMessage('Please select a service first.', 'error');
+        return;
+      }
+      if (!code) {
+        resetPromoState();
+        return;
+      }
+      applyPromoBtn.disabled = true;
+      const originalText = applyPromoBtn.innerHTML;
+      applyPromoBtn.innerHTML = '<span class="spinner"></span> Validating...';
+      google.script.run.withSuccessHandler(function(result) {
+        applyPromoBtn.disabled = false;
+        applyPromoBtn.innerHTML = originalText;
+        if (result.valid) {
+          currentAppliedPromo = { newPrice: result.newPrice };
+          isInvalidPromo = false;
+          promoMessageDiv.innerHTML = `<span style="color:#1e6f5c;">✅ Promo applied! New price: ${result.newPrice.toFixed(2)} MYR.</span>`;
+          updatePaymentDetails();
+        } else {
+          currentAppliedPromo = null;
+          isInvalidPromo = true;
+          promoMessageDiv.innerHTML = '<span style="color:#b33;">❌ Invalid promo code.</span>';
+          updatePaymentDetails();
+        }
+      }).applyPromo(service, code);
+    };
+
+    // Event listeners
+    serviceSelect.addEventListener('change', function() {
+      resetPromoState();
+      updateServiceDescription();
+      const checkedRadio = document.querySelector('input[name="paymentTiming"]:checked');
+      if (checkedRadio) checkedRadio.checked = false;
+      updateUISections();
+    });
+    paymentTimingRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        if (!isServiceSelected()) {
+          this.checked = false;
+          showMessage('⚠️ Please select a service first before choosing payment timing.', 'error');
+          return;
+        }
+        updateUISections();
+      });
+    });
+
+    // File upload setup with progress
+    function setupFileUpload(dropzoneId, progressContainerId, progressFillId, progressTextId, infoId, fileType, onFileReady) {
+      const dropzone = document.getElementById(dropzoneId);
+      const progressContainer = document.getElementById(progressContainerId);
+      const progressFill = document.getElementById(progressFillId);
+      const progressTextSpan = document.getElementById(progressTextId);
+      const infoDiv = document.getElementById(infoId);
+      let currentBase64 = null, currentName = null;
+
+      function updateFileProgress(percent, text) {
+        if (progressContainer) progressContainer.style.display = 'block';
+        if (progressFill) progressFill.style.width = percent + '%';
+        if (progressTextSpan) progressTextSpan.innerText = text;
+        if (percent >= 100) {
+          setTimeout(() => {
+            if (progressContainer) progressContainer.style.display = 'none';
+          }, 600);
+        }
+      }
+
+      function handleFile(file) {
+        if (!file) return;
+        let allowedTypes = [];
+        if (fileType === 'document') allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        else allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        if (!allowedTypes.includes(file.type)) {
+          alert(`Invalid file type. Allowed: ${allowedTypes.join(', ')}`);
+          return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          alert('File size must be less than 10MB.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            updateFileProgress(percent, `Reading: ${percent}%`);
+          }
+        };
+        reader.onload = function(e) {
+          currentBase64 = e.target.result.split(',')[1];
+          currentName = file.name;
+          infoDiv.innerHTML = `📎 ${file.name} (${(file.size/1024).toFixed(1)} KB) <button type="button" class="remove-file">Remove</button>`;
+          updateFileProgress(100, 'Ready');
+          onFileReady(currentBase64, currentName);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      dropzone.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        if (fileType === 'document') input.accept = '.pdf,.doc,.docx';
+        else input.accept = 'image/jpeg,image/png,.pdf';
+        input.onchange = (e) => handleFile(e.target.files[0]);
+        input.click();
+      });
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('drag-over');
+      });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('drag-over');
+        handleFile(e.dataTransfer.files[0]);
+      });
+      infoDiv.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-file')) {
+          currentBase64 = null;
+          currentName = null;
+          infoDiv.innerHTML = '';
+          if (progressContainer) progressContainer.style.display = 'none';
+          onFileReady(null, null);
+        }
+      });
+      return { getBase64: () => currentBase64, getName: () => currentName };
+    }
+
+    const docUpload = setupFileUpload('docDropzone', 'docProgressContainer', 'docProgressFill', 'docProgressText', 'docFileInfo', 'document', (base64, name) => {
+      docBase64 = base64;
+      docName = name;
+    });
+    const proofUpload = setupFileUpload('proofDropzone', 'proofProgressContainer', 'proofProgressFill', 'proofProgressText', 'proofFileInfo', 'proof', (base64, name) => {
+      proofBase64 = base64;
+      proofName = name;
+    });
+
+    // Main booking progress bar
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'progress-container';
+    progressContainer.innerHTML = '<div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div><div id="progressText" class="progress-text"></div>';
+    bookBtn.insertAdjacentElement('beforebegin', progressContainer);
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    function showProgress(show, percent = 0, text = '') {
+      if (show) {
+        progressContainer.style.display = 'block';
+        progressFill.style.width = percent + '%';
+        progressText.innerText = text;
+      } else {
+        progressContainer.style.display = 'none';
+        progressFill.style.width = '0%';
+        progressText.innerText = '';
+      }
+    }
+
+    function updateProgress(percent, text) {
+      progressFill.style.width = percent + '%';
+      progressText.innerText = text;
+    }
+
+    function updateSeatDisplay() {
+      google.script.run.withSuccessHandler(function(remaining) {
+        if (remaining <= 0) {
+          seatsDiv.innerHTML = '🎟️ Remaining seats: <span>0</span> – FULLY BOOKED';
+          bookBtn.disabled = true;
+          bookBtn.innerText = '❌ NO SEATS LEFT TODAY';
+        } else {
+          seatsDiv.innerHTML = `🎟️ Remaining seats: <span>${remaining}</span> out of 7`;
+          bookBtn.disabled = false;
+          bookBtn.innerText = '🎟️ RESERVE MY SEAT';
+        }
+      }).getRemainingSeats();
+    }
+
+    bookBtn.onclick = function() {
+      const name = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const countryCode = document.getElementById('countryCode').value;
+      const phoneRaw = document.getElementById('phoneNumber').value.trim();
+      const whatsapp = countryCode + phoneRaw;
+      const service = serviceSelect.value;
+      const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+      const originalPrice = parseFloat(selectedOption.getAttribute('data-price'));
+      const promoCode = promoInput.value.trim();
+      const notes = notesTextarea.value.trim();
+
+      let finalPrice = originalPrice;
+      if (currentAppliedPromo && !isInvalidPromo && currentAppliedPromo.newPrice) {
+        finalPrice = currentAppliedPromo.newPrice;
+      }
+
+      const paymentTimingRadio = document.querySelector('input[name="paymentTiming"]:checked');
+      const paymentTiming = paymentTimingRadio ? paymentTimingRadio.value : null;
+
+      const missing = [];
+      if (!name) missing.push('Full Name');
+      if (!email) missing.push('Email Address');
+      if (!phoneRaw) missing.push('WhatsApp Number');
+      if (!service) missing.push('Service');
+      if (!paymentTiming) missing.push('Payment timing (Pay Now / Pay Later)');
+      if (missing.length) {
+        showMessage(`❌ Please fill all required fields: ${missing.join(', ')}`, 'error');
+        return;
+      }
+      if (!email.includes('@')) { showMessage('❌ Valid email required.', 'error'); return; }
+      if (paymentTiming === 'Pay Now' && !proofBase64) {
+        showMessage('⚠️ For "Pay Now", please upload a payment proof screenshot.', 'error');
+        return;
+      }
+
+      bookBtn.disabled = true;
+      const originalBtnText = bookBtn.innerText;
+      bookBtn.innerHTML = '<span class="spinner"></span> Processing...';
+      showProgress(true, 0, 'Processing...');
+
+      google.script.run.withSuccessHandler(function(result) {
+        showProgress(false);
+        if (result.success) {
+          showMessage(result.message, 'success');
+          document.getElementById('fullName').value = '';
+          document.getElementById('email').value = '';
+          document.getElementById('phoneNumber').value = '';
+          serviceSelect.value = '';
+          promoInput.value = '';
+          promoMessageDiv.innerHTML = '';
+          notesTextarea.value = '';
+          docBase64 = null; docName = null;
+          proofBase64 = null; proofName = null;
+          document.getElementById('docFileInfo').innerHTML = '';
+          document.getElementById('proofFileInfo').innerHTML = '';
+          paymentTimingRadios.forEach(r => r.checked = false);
+          docUploadSection.style.display = 'none';
+          payNowSection.style.display = 'none';
+          resetPromoState();
+          updateServiceDescription();
+          updateSeatDisplay();
+        } else {
+          showMessage(result.message, 'error');
+          updateSeatDisplay();
+        }
+        bookBtn.disabled = false;
+        bookBtn.innerHTML = originalBtnText;
+      }).submitBookingWithTiming(name, email, whatsapp, service, originalPrice, promoCode, notes, finalPrice,
+                                 paymentTiming, docBase64 || '', docName || '', proofBase64, proofName);
+    };
+
+    function showMessage(msg, type) {
+      msgDiv.innerHTML = msg;
+      msgDiv.className = `message ${type}`;
+      setTimeout(() => { if (msgDiv.innerHTML === msg) msgDiv.innerHTML = ''; }, 5000);
+    }
+
+    // Initialise
+    updateSeatDisplay();
+    updateServiceDescription();
+    updateUISections();
+  })();
+</script>
+</body>
+</html>
