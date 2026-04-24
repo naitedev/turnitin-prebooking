@@ -170,6 +170,15 @@
       padding: 6px 0;
     }
     .bank-label { font-weight: 600; }
+    .payment-instructions {
+      background: #fff7e5;
+      border-radius: 20px;
+      padding: 12px;
+      margin: 12px 0;
+      font-size: 0.75rem;
+      border-left: 3px solid #f5b042;
+    }
+    .payment-instructions ol { margin-left: 20px; }
     .file-dropzone {
       border: 2px dashed #cbd5e1;
       border-radius: 32px;
@@ -278,11 +287,8 @@
         <option value="Manual" data-price="82.35">✍️ Manual Rewriting Service – 82.35 MYR</option>
       </select>
     </div>
-
-    <!-- Service description (dynamic) -->
     <div id="serviceDescription" class="service-description" style="display: none;"></div>
 
-    <!-- PAYMENT TIMING -->
     <div class="input-group">
       <label>When would you like to pay? *</label>
       <div class="radio-group">
@@ -291,7 +297,6 @@
       </div>
     </div>
 
-    <!-- DOCUMENT UPLOAD (hidden by default) -->
     <div id="docUploadSection" style="display: none;">
       <div class="input-group">
         <label>📄 Upload your document (optional, PDF/DOC/DOCX)</label>
@@ -307,7 +312,6 @@
       </div>
     </div>
 
-    <!-- PAY NOW SECTION (bank details + promo + proof) – hidden by default -->
     <div id="payNowSection" style="display: none;">
       <div class="payment-details">
         <h4>💳 Bank Transfer Details</h4>
@@ -317,7 +321,18 @@
         <div class="bank-row"><span class="bank-label">Reference:</span> <span>Your Name + Booking ID (we will send it after reservation)</span></div>
         <div class="amount-box" id="totalAmountBox">Amount to pay: -- MYR</div>
         
-        <!-- Promo code inside bank details -->
+        <!-- Payment instructions (new) -->
+        <div class="payment-instructions">
+          <strong>📌 How to complete your payment:</strong>
+          <ol>
+            <li>Transfer the exact amount to the Maybank account above.</li>
+            <li>Use your <strong>Name + Booking ID</strong> as reference (we will send Booking ID after reservation).</li>
+            <li>Take a screenshot of the successful transaction.</li>
+            <li>Upload the screenshot using the "Upload payment proof" box below.</li>
+            <li>Click "Reserve My Seat" – we will verify within 24 hours.</li>
+          </ol>
+        </div>
+
         <div style="margin: 16px 0 8px;">
           <label style="font-weight:600;">Promo Code (15% discount)</label>
           <div class="flex-row" style="gap:8px;">
@@ -326,11 +341,10 @@
           </div>
           <div id="promoMessage" style="font-size:0.75rem; margin-top:6px;"></div>
         </div>
-        
-        <div style="font-size:0.7rem; text-align:center; margin-top:12px;">After payment, upload a screenshot below.</div>
+
+        <div style="font-size:0.7rem; text-align:center; margin-top:8px;">After payment, upload a screenshot below.</div>
       </div>
 
-      <!-- PAYMENT PROOF UPLOAD -->
       <div class="input-group">
         <label>📷 Upload payment proof (screenshot) *</label>
         <div id="proofDropzone" class="file-dropzone">
@@ -345,13 +359,11 @@
       </div>
     </div>
 
-    <!-- SPECIAL REQUESTS (optional) -->
     <div class="input-group">
       <label>Special requests (optional)</label>
       <textarea rows="2" id="notes" placeholder="e.g., urgent, specific time..."></textarea>
     </div>
 
-    <!-- RESERVE BUTTON -->
     <button id="bookBtn">🎟️ RESERVE MY SEAT</button>
     <div id="msg" class="message"></div>
   </div>
@@ -376,7 +388,6 @@
     const msgDiv = document.getElementById('msg');
     const notesTextarea = document.getElementById('notes');
 
-    // Service descriptions
     const descriptions = {
       'Plagiarism Only': '📄 Full Turnitin similarity report with highlighted matches, source links, and percentage score. No AI detection.',
       'AI Only': '🤖 AI writing indicator report showing probability of AI-generated content (GPT, Bard, etc.). No plagiarism check.',
@@ -394,7 +405,6 @@
       }
     }
 
-    // File variables
     let docBase64 = null, docName = null;
     let proofBase64 = null, proofName = null;
     let currentOriginalPrice = 0;
@@ -408,11 +418,8 @@
     function updateUISections() {
       const serviceOk = isServiceSelected();
       const selectedTiming = document.querySelector('input[name="paymentTiming"]:checked');
-      
-      // Hide both sections initially
       docUploadSection.style.display = 'none';
       payNowSection.style.display = 'none';
-      
       if (!serviceOk) {
         if (selectedTiming) {
           selectedTiming.checked = false;
@@ -420,7 +427,6 @@
         }
         return;
       }
-      
       if (selectedTiming) {
         docUploadSection.style.display = 'block';
         if (selectedTiming.value === 'Pay Now') {
@@ -460,14 +466,8 @@
     applyPromoBtn.onclick = function() {
       const code = promoInput.value.trim();
       const service = serviceSelect.value;
-      if (!service) {
-        showMessage('Please select a service first.', 'error');
-        return;
-      }
-      if (!code) {
-        resetPromoState();
-        return;
-      }
+      if (!service) { showMessage('Please select a service first.', 'error'); return; }
+      if (!code) { resetPromoState(); return; }
       applyPromoBtn.disabled = true;
       const originalText = applyPromoBtn.innerHTML;
       applyPromoBtn.innerHTML = '<span class="spinner"></span> Validating...';
@@ -488,7 +488,6 @@
       }).applyPromo(service, code);
     };
 
-    // Event listeners
     serviceSelect.addEventListener('change', function() {
       resetPromoState();
       updateServiceDescription();
@@ -507,7 +506,6 @@
       });
     });
 
-    // File upload setup with progress
     function setupFileUpload(dropzoneId, progressContainerId, progressFillId, progressTextId, infoId, fileType, onFileReady) {
       const dropzone = document.getElementById(dropzoneId);
       const progressContainer = document.getElementById(progressContainerId);
@@ -521,9 +519,7 @@
         if (progressFill) progressFill.style.width = percent + '%';
         if (progressTextSpan) progressTextSpan.innerText = text;
         if (percent >= 100) {
-          setTimeout(() => {
-            if (progressContainer) progressContainer.style.display = 'none';
-          }, 600);
+          setTimeout(() => { if (progressContainer) progressContainer.style.display = 'none'; }, 600);
         }
       }
 
@@ -532,14 +528,8 @@
         let allowedTypes = [];
         if (fileType === 'document') allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
         else allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-        if (!allowedTypes.includes(file.type)) {
-          alert(`Invalid file type. Allowed: ${allowedTypes.join(', ')}`);
-          return;
-        }
-        if (file.size > 10 * 1024 * 1024) {
-          alert('File size must be less than 10MB.');
-          return;
-        }
+        if (!allowedTypes.includes(file.type)) { alert(`Invalid file type. Allowed: ${allowedTypes.join(', ')}`); return; }
+        if (file.size > 10 * 1024 * 1024) { alert('File size must be less than 10MB.'); return; }
         const reader = new FileReader();
         reader.onprogress = (event) => {
           if (event.lengthComputable) {
@@ -565,10 +555,7 @@
         input.onchange = (e) => handleFile(e.target.files[0]);
         input.click();
       });
-      dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('drag-over');
-      });
+      dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
       dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
       dropzone.addEventListener('drop', (e) => {
         e.preventDefault();
@@ -577,8 +564,7 @@
       });
       infoDiv.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-file')) {
-          currentBase64 = null;
-          currentName = null;
+          currentBase64 = null; currentName = null;
           infoDiv.innerHTML = '';
           if (progressContainer) progressContainer.style.display = 'none';
           onFileReady(null, null);
@@ -587,16 +573,9 @@
       return { getBase64: () => currentBase64, getName: () => currentName };
     }
 
-    const docUpload = setupFileUpload('docDropzone', 'docProgressContainer', 'docProgressFill', 'docProgressText', 'docFileInfo', 'document', (base64, name) => {
-      docBase64 = base64;
-      docName = name;
-    });
-    const proofUpload = setupFileUpload('proofDropzone', 'proofProgressContainer', 'proofProgressFill', 'proofProgressText', 'proofFileInfo', 'proof', (base64, name) => {
-      proofBase64 = base64;
-      proofName = name;
-    });
+    const docUpload = setupFileUpload('docDropzone', 'docProgressContainer', 'docProgressFill', 'docProgressText', 'docFileInfo', 'document', (base64, name) => { docBase64 = base64; docName = name; });
+    const proofUpload = setupFileUpload('proofDropzone', 'proofProgressContainer', 'proofProgressFill', 'proofProgressText', 'proofFileInfo', 'proof', (base64, name) => { proofBase64 = base64; proofName = name; });
 
-    // Main booking progress bar
     const progressContainer = document.createElement('div');
     progressContainer.className = 'progress-container';
     progressContainer.innerHTML = '<div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div><div id="progressText" class="progress-text"></div>';
@@ -614,11 +593,6 @@
         progressFill.style.width = '0%';
         progressText.innerText = '';
       }
-    }
-
-    function updateProgress(percent, text) {
-      progressFill.style.width = percent + '%';
-      progressText.innerText = text;
     }
 
     function updateSeatDisplay() {
@@ -648,9 +622,7 @@
       const notes = notesTextarea.value.trim();
 
       let finalPrice = originalPrice;
-      if (currentAppliedPromo && !isInvalidPromo && currentAppliedPromo.newPrice) {
-        finalPrice = currentAppliedPromo.newPrice;
-      }
+      if (currentAppliedPromo && !isInvalidPromo && currentAppliedPromo.newPrice) finalPrice = currentAppliedPromo.newPrice;
 
       const paymentTimingRadio = document.querySelector('input[name="paymentTiming"]:checked');
       const paymentTiming = paymentTimingRadio ? paymentTimingRadio.value : null;
@@ -660,16 +632,10 @@
       if (!email) missing.push('Email Address');
       if (!phoneRaw) missing.push('WhatsApp Number');
       if (!service) missing.push('Service');
-      if (!paymentTiming) missing.push('Payment timing (Pay Now / Pay Later)');
-      if (missing.length) {
-        showMessage(`❌ Please fill all required fields: ${missing.join(', ')}`, 'error');
-        return;
-      }
+      if (!paymentTiming) missing.push('Payment timing');
+      if (missing.length) { showMessage(`❌ Please fill all required fields: ${missing.join(', ')}`, 'error'); return; }
       if (!email.includes('@')) { showMessage('❌ Valid email required.', 'error'); return; }
-      if (paymentTiming === 'Pay Now' && !proofBase64) {
-        showMessage('⚠️ For "Pay Now", please upload a payment proof screenshot.', 'error');
-        return;
-      }
+      if (paymentTiming === 'Pay Now' && !proofBase64) { showMessage('⚠️ For "Pay Now", please upload a payment proof screenshot.', 'error'); return; }
 
       bookBtn.disabled = true;
       const originalBtnText = bookBtn.innerText;
@@ -713,7 +679,6 @@
       setTimeout(() => { if (msgDiv.innerHTML === msg) msgDiv.innerHTML = ''; }, 5000);
     }
 
-    // Initialise
     updateSeatDisplay();
     updateServiceDescription();
     updateUISections();
